@@ -101,13 +101,13 @@ data = {
         },
         {
             'role': 'user',
-            'content': str(results_summary)
+            'content': '以下の文章を分析してください。'+str(results_summary)
         }
     ]
 }
 
 response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
-groqResp = response.json()['choices'][0]['message']['content']
+#groqResp = response.json()['choices'][0]['message']['content']
 
 print(groqResp)
 
@@ -116,4 +116,4 @@ st.subheader('Regression Results')
 st.text(results_summary)
 
 st.subheader('Groq API Analysis Results')
-st.json(groqResp)
+#st.json(groqResp)
