@@ -3,90 +3,51 @@ import pandas as pd
 import statsmodels.api as sm
 import requests
 from io import BytesIO
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import landscape, A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
-from docx import Document
 import tempfile
-
+import textwrap
 
 # サンプルデータの作成
 data_mercedes = {
-    'ブランドイメージ': [4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4,
-    6.5, 6.6, 6.7, 6.8, 6.9, 4.0, 4.1, 4.2, 4.3, 4.4,
-    4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4,
-    5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4,
-    6.5, 6.6, 6.7, 6.8, 6.9, 4.0, 4.1, 4.2, 4.3, 4.4,
-    4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4],
-    '顧客体験': [5, 4, 5, 4.5, 5, 4.1, 5.1, 4.2, 5.2, 4.3, 5.3, 4.4, 5.4, 4.5, 5.5, 4.6, 5.6, 4.7, 5.7, 4.8, 5.8, 4.9, 5.9, 4.0, 5.0, 4.1, 5.1, 4.2, 5.2, 4.3, 5.3, 4.4, 5.4, 4.5, 5.5, 4.6, 5.6, 4.7, 5.7, 4.8, 5.8, 4.9, 5.9, 4.0, 5.0, 4.1, 5.1, 4.2, 5.2, 4.3, 5.3, 4.4, 5.4, 4.5, 5.5, 4.6, 5.6, 4.7, 5.7, 4.8, 5.8, 4.9, 5.9, 4.0, 5.0, 4.1, 5.1, 4.2, 5.2, 4.3, 5.3, 4.4, 5.4, 4.5, 5.5, 4.6, 5.6, 4.7, 5.7, 4.8, 5.8, 4.9, 5.9, 4.0, 5.0, 4.1, 5.1, 4.2, 5.2, 4.3, 5.3, 4.4, 5.4, 4.5, 5.5, 4.6, 5.6, 4.7, 5.7, 4.8],
+    'ブランドイメージ': [4.5, 4.6, 4.7, 4.8, 4.9] * 20,
+    '顧客体験': [5, 4, 5, 4.5, 5] * 20,
     'リレーションシップ営業': [4.2, 4.0, 4.8, 4.5, 4.6] * 20,
     'ローン・リースプラン': [3.5, 4.0, 3.8, 3.7, 4.1] * 20,
     '保証サービス': [4.5, 4.6, 4.4, 4.3, 4.7] * 20,
     '広告費': [60, 70, 50, 40, 80] * 20,
-    '価格設定': [800, 850, 820, 830, 810] * 20,
     '売上': [500, 480, 510, 495, 530] * 20
-}
-
-data_bmw = {
-    'ブランドイメージ': [4.5, 4.6, 4.7, 4.8, 4.9] * 20,
-    '顧客体験': [4.8, 4.7, 4.9, 4.6, 5.0] * 20,
-    'リレーションシップ営業': [4.1, 4.3, 4.2, 4.4, 4.5] * 20,
-    'ローン・リースプラン': [3.8, 3.9, 4.0, 4.1, 4.2] * 20,
-    '保証サービス': [4.3, 4.4, 4.5, 4.6, 4.7] * 20,
-    '広告費': [55, 65, 75, 85, 95] * 20,
-    '価格設定': [780, 790, 800, 810, 820] * 20,
-    '売上': [490, 500, 510, 520, 530] * 20
-}
-
-data_nextage = {
-    '価格': [200, 150, 300, 250, 100] * 20,
-    '広告費': [50, 40, 60, 70, 30] * 20,
-    '在庫数': [100, 120, 80, 90, 110] * 20,
-    '車両品質': [4.5, 4.0, 4.8, 4.6, 4.2] * 20,
-    '店舗立地': [3, 5, 4, 2, 4] * 20,
-    '成約率': [0.5, 0.6, 0.55, 0.65, 0.6] * 20,
-    '売上': [300, 250, 350, 330, 210] * 20
 }
 
 # フォントをWebからダウンロードして登録
 font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
 font_name = 'MS-Gothic'
-
 response = requests.get(font_url)
 with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
     tf.write(response.content)
     pdfmetrics.registerFont(TTFont(font_name, tf.name))
 
-# Word生成関数
-def generate_word(content):
-    doc = Document()
-    doc.add_heading("Regression Result Analysis", level=1)
-    
-    # 結果の内容を1行ずつ追加
-    for line in content.split("\n"):
-        doc.add_paragraph(line)
-    
-    buffer = BytesIO()
-    doc.save(buffer)
-    buffer.seek(0)
-    return buffer
-
 # PDF生成関数
 def generate_pdf(content):
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=A4)
+    p = canvas.Canvas(buffer, pagesize=landscape(A4))
     
     # 日本語フォント設定
-    p.setFont(font_name, 8)
-    p.drawString(100, 800, "Regression Result Analysis")
-    text = p.beginText(100, 780)
+    p.setFont(font_name, 10)
+    p.drawString(10, 550, "Regression Result Analysis")
+    text = p.beginText(10, 530)
     text.setFont(font_name, 10)
-    text.setLeading(14)
+    text.setLeading(12)
     
-    # 結果の内容を1行ずつ追加
+    # テキストをページ幅に合わせて折り返し
+    max_width = 800  # ページ横幅に収まるように調整
     for line in content.split("\n"):
-        text.textLine(line)
+        wrapped_lines = textwrap.wrap(line, width=90)  # 90文字ごとに改行
+        for wrapped_line in wrapped_lines:
+            text.textLine(wrapped_line)
+        text.textLine("")  # 行間を開ける
     
     p.drawText(text)
     p.showPage()
@@ -110,10 +71,8 @@ else:
 # 選択されたデータセットに基づいてデータフレームを作成
 if dataset == 'Mercedes':
     df = pd.DataFrame(data_mercedes)
-elif dataset == 'BMW':
-    df = pd.DataFrame(data_bmw)
 else:
-    df = pd.DataFrame(data_nextage)
+    df = pd.DataFrame(data_mercedes)
 
 # 説明変数と目的変数に分ける
 if dataframe == 'サービス':
@@ -122,11 +81,8 @@ if dataframe == 'サービス':
 elif dataframe == 'ブランド':
     X = df[['ブランドイメージ', '顧客体験', 'リレーションシップ営業']]
     y = df['売上']
-elif dataframe == '車両':
-    X = df[['車両品質', '店舗立地', '成約率']]
-    y = df['売上']
 else:
-    X = df[['価格', '広告費', '在庫数']]
+    X = df[['ブランドイメージ', '顧客体験', 'リレーションシップ営業']]
     y = df['売上']
 
 # 定数項を追加
@@ -143,12 +99,10 @@ API_URL = 'https://api.groq.com/openai/v1/'
 MODEL = 'Llama-3.1-70b-Versatile'
 API_KEY = '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'
 maxTokens = 4096
-
 headers = {
     'Content-Type': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
 }
-
 data = {
     'model': MODEL,
     'max_tokens': maxTokens,
@@ -163,24 +117,16 @@ data = {
         }
     ]
 }
-
 response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
 groqResp = response.json()['choices'][0]['message']['content']
 
 # Streamlitで結果を表示
 st.subheader('Regression 結果')
 st.text(results_summary)
-
 st.subheader('結果分析')
-#st.text(groqResp)
 st.text_area('Result Analysis', groqResp, height=300)
-#st.text(response.json()['choices'][0]['message']['content'])
-contents = str(results_summary) + "\n\n" + groqResp
-#st.text_area('PDF', contents, height=300)
 
 # PDFボタンの作成
-if st.button("結果を印刷"):        
-    word_buffer = generate_word(contents)
-    st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    #pdf_buffer = generate_pdf(contents)
-    #st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
+if st.button("結果を印刷"):
+    pdf_buffer = generate_pdf(str(results_summary) + "\n\n" + groqResp)
+    st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
