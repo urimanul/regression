@@ -72,19 +72,34 @@ def generate_word(content):
 def generate_pdf(content):
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
+    font_name = "Helvetica"  # フォント名の指定が必要です
     p.setFont(font_name, 8)
     p.drawString(100, 800, "Regression Result Analysis")
+
     text = p.beginText(100, 780)
     text.setFont(font_name, 10)
     text.setLeading(14)
+
+    max_y_position = 40  # ページ下限位置
+    y_position = 780     # 初期のテキスト位置
+
     for line in content.split("\n"):
         wrapped_lines = wrap(line, 50)
         for wrapped_line in wrapped_lines:
+            # ページ下限に達したら新しいページを作成
+            if y_position <= max_y_position:
+                p.drawText(text)
+                p.showPage()
+                text = p.beginText(100, 780)  # 新しいページの開始位置をリセット
+                text.setFont(font_name, 10)
+                text.setLeading(14)
+                y_position = 780  # y位置をリセット
+
             text.textLine(wrapped_line)
-    #for line in content.split("\n"):
-        #text.textLine(line)
+            y_position -= 14  # 次の行のy位置を更新
+
+    # 最後のページを描画
     p.drawText(text)
-    p.showPage()
     p.save()
     buffer.seek(0)
     return buffer
