@@ -162,10 +162,10 @@ if st.button('分析'):
 
     # 結果の内容をまとめる
     contents = str(results_summary) + "\n\n" + groqResp
+    word_buffer = generate_word(contents)
+    st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
     # PDFボタンの作成
     if st.button("結果を印刷"):
-        word_buffer = generate_word(contents)
-        st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-        # pdf_buffer = generate_pdf(contents)
-        # st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
+        pdf_buffer = generate_pdf(contents)
+        st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
