@@ -81,22 +81,39 @@ model = sm.OLS(y, X).fit()
 results_summary = model.summary()
 
 # Groq APIをコールして分析
-api_url = "https://api.groq.com/openai/v1/chat/completions"
-api_key = "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"
+API_URL = 'https://api.groq.com/openai/v1/'
+MODEL = 'Llama-3.1-70b-Versatile'
+API_KEY = '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'
+maxTokens = 4096
+
 headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {api_key}"
-}
-data = {
-    "results_summary": str(results_summary)
+    'Content-Type': 'application/json',
+    'Authorization': f'Bearer {API_KEY}'
 }
 
-response = requests.post(api_url, headers=headers, json=data)
-analysis_results = response.json()
+data = {
+    'model': MODEL,
+    'max_tokens': maxTokens,
+    'messages': [
+        {
+            'role': 'system',
+            'content': '貴方は専門家です。できるだけわかりやすく答えてください。必ず、日本語で答えてください。'
+        },
+        {
+            'role': 'user',
+            'content': 'myContent'  # ここにユーザーの質問内容を入れます
+        }
+    ]
+}
+
+response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
+groqResp = response.json()['choices'][0]['message']['content']
+
+print(groqResp)
 
 # Streamlitで結果を表示
 st.subheader('Regression Results')
 st.text(results_summary)
 
 st.subheader('Groq API Analysis Results')
-st.json(analysis_results)
+st.json(groqResp)
