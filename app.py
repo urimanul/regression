@@ -63,8 +63,8 @@ def generate_pdf(content):
     
     # 日本語フォント設定
     p.setFont(font_name, 10)
-    p.drawString(50, 800, "Regression Result Analysis")
-    text = p.beginText(50, 780)
+    p.drawString(10, 800, "Regression Result Analysis")
+    text = p.beginText(10, 780)
     text.setFont(font_name, 10)
     text.setLeading(10)
     
