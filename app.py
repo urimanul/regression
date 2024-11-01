@@ -43,7 +43,10 @@ st.write('セールスデータの回帰分析')
 dataset = st.selectbox('データセット', ('Mercedes', 'BMW', 'NEXSTAGE'))
 
 # データフレームの選択
-dataframe = st.selectbox('データフレーム', ('ブランド', 'サービス', '車両', '価格'))
+if dataset in ['Mercedes', 'BMW']:
+    dataframe = st.selectbox('データフレーム', ('ブランド', 'サービス'))
+else:
+    dataframe = st.selectbox('データフレーム', ('車両', '価格'))
 
 # 選択されたデータセットに基づいてデータフレームを作成
 if dataset == 'Mercedes':
@@ -66,8 +69,7 @@ elif dataframe == '車両':
 else:
     X = df[['価格', '広告費', '在庫数']]
     y = df['売上']
-    
-    
+
 # 定数項を追加
 X = sm.add_constant(X)
 
