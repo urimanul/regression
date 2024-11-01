@@ -175,7 +175,7 @@ st.subheader('結果分析')
 st.text_area('Result Analysis', groqResp, height=300)
 #st.text(response.json()['choices'][0]['message']['content'])
 contents = str(results_summary) + "\n\n" + groqResp
-st.text_area('PDF', contents, height=300)
+#st.text_area('PDF', contents, height=300)
 
 # PDFボタンの作成
 if st.button("結果を印刷"):
