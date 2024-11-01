@@ -165,7 +165,7 @@ data = {
 
 response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
 #groqResp = response.json()['choices'][0]['message']['content']
-groqResp = "Result"
+groqResp = response
 
 # Streamlitで結果を表示
 st.subheader('Regression 結果')
@@ -177,10 +177,5 @@ st.text_area('Result Analysis', groqResp, height=300)
 #st.text(response.json()['choices'][0]['message']['content'])
 contents = str(results_summary) + "\n\n" + groqResp
 #st.text_area('PDF', contents, height=300)
-
-# PDFボタンの作成
-if st.button("結果を印刷"):
-    word_buffer = generate_word(contents)
-    st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    #pdf_buffer = generate_pdf(contents)
-    #st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
+word_buffer = generate_word(contents)
+st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
