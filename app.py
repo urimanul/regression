@@ -56,6 +56,20 @@ with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
     tf.write(response.content)
     pdfmetrics.registerFont(TTFont(font_name, tf.name))
 
+# Word生成関数
+def generate_word(content):
+    doc = Document()
+    doc.add_heading("Regression Result Analysis", level=1)
+    
+    # 結果の内容を1行ずつ追加
+    for line in content.split("\n"):
+        doc.add_paragraph(line)
+    
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
+
 # PDF生成関数
 def generate_pdf(content):
     buffer = BytesIO()
@@ -164,5 +178,7 @@ st.text_area('PDF', contents, height=300)
 
 # PDFボタンの作成
 if st.button("結果を印刷"):
-    pdf_buffer = generate_pdf(contents)
-    st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
+    word_buffer = generate_word(contents)
+    st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    #pdf_buffer = generate_pdf(contents)
+    #st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
