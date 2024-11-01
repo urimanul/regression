@@ -41,6 +41,25 @@ data_nextage = {
     '売上': [300, 250, 350, 330, 210] * 20
 }
 
+# PDF生成関数
+def generate_pdf(content):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    p.drawString(100, 800, "Regression Result Analysis")
+    text = p.beginText(100, 780)
+    text.setFont("Helvetica", 10)
+    text.setLeading(14)
+    
+    # 結果の内容を1行ずつ追加
+    for line in content.split("\n"):
+        text.textLine(line)
+    
+    p.drawText(text)
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return buffer
+
 # Streamlitアプリの設定
 st.title('セールス分析')
 st.write('セールスデータの回帰分析（因果探索）')
@@ -122,3 +141,8 @@ st.subheader('結果分析')
 #st.text(groqResp)
 st.text_area('Result Analysis', groqResp, height=300)
 #st.text(response.json()['choices'][0]['message']['content'])
+
+# PDFボタンの作成
+if st.button("結果を印刷"):
+    pdf_buffer = generate_pdf(str(results_summary) + "\n\n" + groqResp)
+    st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
