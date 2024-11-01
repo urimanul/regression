@@ -63,10 +63,10 @@ def generate_pdf(content):
     
     # 日本語フォント設定
     p.setFont(font_name, 10)
-    p.drawString(100, 800, "Regression Result Analysis")
-    text = p.beginText(100, 780)
+    p.drawString(50, 800, "Regression Result Analysis")
+    text = p.beginText(50, 780)
     text.setFont(font_name, 10)
-    text.setLeading(14)
+    text.setLeading(10)
     
     # 結果の内容を1行ずつ追加
     for line in content.split("\n"):
