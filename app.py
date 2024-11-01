@@ -176,6 +176,8 @@ st.text_area('Result Analysis', groqResp, height=300)
 #st.text(response.json()['choices'][0]['message']['content'])
 contents = str(results_summary) + "\n\n" + groqResp
 #st.text_area('PDF', contents, height=300)
+word_buffer = generate_word(contents)
+st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
 # PDFボタンの作成
 if st.button("結果を印刷"):
