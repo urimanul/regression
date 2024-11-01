@@ -117,3 +117,4 @@ st.text(results_summary)
 
 st.subheader('Groq API Analysis Results')
 #st.json(groqResp)
+st.json(response)
