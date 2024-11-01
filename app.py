@@ -8,6 +8,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 import tempfile
+import textwrap
 
 # サンプルデータの作成
 data_mercedes = {
