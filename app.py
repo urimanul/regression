@@ -49,10 +49,11 @@ data_nextage = {
 }
 
 # フォントをWebからダウンロードして登録
-font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
+font_url = 'https://example.com/path-to-your-font/msgothic.ttc'  # 使用したいフォントファイルのURL
 font_name = 'MS-Gothic'
+
 response = requests.get(font_url)
-with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
+with tempfile.NamedTemporaryFile(delete=False, suffix=".ttc") as tf:
     tf.write(response.content)
     pdfmetrics.registerFont(TTFont(font_name, tf.name))
 
@@ -63,18 +64,14 @@ def generate_pdf(content):
     
     # 日本語フォント設定
     p.setFont(font_name, 10)
-    p.drawString(10, 550, "Regression Result Analysis")
-    text = p.beginText(10, 530)
+    p.drawString(100, 800, "Regression Result Analysis")
+    text = p.beginText(100, 780)
     text.setFont(font_name, 10)
-    text.setLeading(12)
+    text.setLeading(14)
     
-    # テキストをページ幅に合わせて折り返し
-    max_width = 800  # ページ横幅に収まるように調整
+    # 結果の内容を1行ずつ追加
     for line in content.split("\n"):
-        wrapped_lines = textwrap.wrap(line, width=50)  # 50文字ごとに改行
-        for wrapped_line in wrapped_lines:
-            text.textLine(wrapped_line)
-        text.textLine("")  # 行間を開ける
+        text.textLine(line)
     
     p.drawText(text)
     p.showPage()
