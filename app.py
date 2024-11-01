@@ -8,6 +8,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 import tempfile
+import textwrap
 
 # サンプルデータの作成
 data_mercedes = {
@@ -68,9 +69,13 @@ def generate_pdf(content):
     text.setFont(font_name, 10)
     text.setLeading(14)
     
-    # 結果の内容を1行ずつ追加
+    # テキストをページ幅に合わせて折り返し
+    max_width = 800  # ページ横幅に収まるように調整
     for line in content.split("\n"):
-        text.textLine(line)
+        wrapped_lines = textwrap.wrap(line, width=90)  # 90文字ごとに改行
+        for wrapped_line in wrapped_lines:
+            text.textLine(wrapped_line)
+        text.textLine("")  # 行間を開ける
     
     p.drawText(text)
     p.showPage()
