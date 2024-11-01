@@ -10,6 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from docx import Document
 import tempfile
 
+
 # サンプルデータの作成
 data_mercedes = {
     'ブランドイメージ': [4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4,
@@ -178,7 +179,7 @@ contents = str(results_summary) + "\n\n" + groqResp
 #st.text_area('PDF', contents, height=300)
 
 # PDFボタンの作成
-if st.button("結果を印刷"):
+if st.button("結果を印刷"):        
     word_buffer = generate_word(contents)
     st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     #pdf_buffer = generate_pdf(contents)
