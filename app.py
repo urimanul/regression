@@ -155,17 +155,23 @@ if st.button('分析'):
     
     response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
     groqResp = response.json()['choices'][0]['message']['content']
-    st.subheader('Regression 結果')
-    st.text(results_summary)
-    st.subheader('結果分析')
-    st.text_area('Result Analysis', groqResp, height=300)
 
-    # 結果の内容をまとめる
-    contents = str(results_summary) + "\n\n" + groqResp
-    word_buffer = generate_word(contents)
+    # 結果をsession_stateに保存
+    st.session_state['results_summary'] = results_summary
+    st.session_state['groqResp'] = groqResp
+    st.session_state['contents'] = str(results_summary) + "\n\n" + groqResp
+
+# 分析結果の表示
+if 'results_summary' in st.session_state and 'groqResp' in st.session_state:
+    st.subheader('Regression 結果')
+    st.text(st.session_state['results_summary'])
+    st.subheader('結果分析')
+    st.text_area('Result Analysis', st.session_state['groqResp'], height=300)
+
+# ダウンロードボタン
+if 'contents' in st.session_state:
+    word_buffer = generate_word(st.session_state['contents'])
     st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-    # PDFボタンの作成
-    if st.button("結果を印刷"):
-        pdf_buffer = generate_pdf(contents)
-        st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
+    pdf_buffer = generate_pdf(st.session_state['contents'])
+    st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")    
