@@ -5,6 +5,9 @@ import requests
 from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+import tempfile
 
 # サンプルデータの作成
 data_mercedes = {
@@ -44,13 +47,25 @@ data_nextage = {
     '売上': [300, 250, 350, 330, 210] * 20
 }
 
+# フォントをWebからダウンロードして登録
+font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
+font_name = 'MS-Gothic'
+
+response = requests.get(font_url)
+with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
+    tf.write(response.content)
+    pdfmetrics.registerFont(TTFont(font_name, tf.name))
+
 # PDF生成関数
 def generate_pdf(content):
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # 日本語フォント設定
+    p.setFont(font_name, 10)
     p.drawString(100, 800, "Regression Result Analysis")
     text = p.beginText(100, 780)
-    text.setFont("Helvetica", 10)
+    text.setFont(font_name, 10)
     text.setLeading(14)
     
     # 結果の内容を1行ずつ追加
