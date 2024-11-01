@@ -1,4 +1,4 @@
 statsmodels
 python-docx
 reportlab
-
+textwrap3
