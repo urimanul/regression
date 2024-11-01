@@ -81,7 +81,7 @@ model = sm.OLS(y, X).fit()
 results_summary = model.summary()
 
 # Groq APIをコールして分析
-api_url = "https://api.groq.com/analyze"
+api_url = "https://api.groq.com/openai/v1/chat/completions"
 api_key = "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"
 headers = {
     "Content-Type": "application/json",
