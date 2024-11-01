@@ -8,7 +8,6 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 import tempfile
-import textwrap
 
 # サンプルデータの作成
 data_mercedes = {
@@ -49,11 +48,11 @@ data_nextage = {
 }
 
 # フォントをWebからダウンロードして登録
-font_url = 'https://example.com/path-to-your-font/msgothic.ttc'  # 使用したいフォントファイルのURL
+font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
 font_name = 'MS-Gothic'
 
 response = requests.get(font_url)
-with tempfile.NamedTemporaryFile(delete=False, suffix=".ttc") as tf:
+with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
     tf.write(response.content)
     pdfmetrics.registerFont(TTFont(font_name, tf.name))
 
