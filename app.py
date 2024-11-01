@@ -110,9 +110,9 @@ response = requests.post(f'{API_URL}chat/completions', headers=headers, json=dat
 groqResp = response.json()['choices'][0]['message']['content']
 
 # Streamlitで結果を表示
-st.subheader('Regression Results')
+st.subheader('Regression 結果')
 st.text(results_summary)
 
-st.subheader('Groq API Analysis Results')
+st.subheader('結果分析')
 st.text(groqResp)
 #st.text(response.json()['choices'][0]['message']['content'])
