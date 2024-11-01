@@ -25,23 +25,49 @@ data_bmw = {
     '売上': [490, 500, 510, 520, 530]
 }
 
+data_nextage = {
+    '価格': [200, 150, 300, 250, 100],
+    '広告費': [50, 40, 60, 70, 30],
+    '在庫数': [100, 120, 80, 90, 110],
+    '車両品質': [4.5, 4.0, 4.8, 4.6, 4.2],
+    '店舗立地': [3, 5, 4, 2, 4],
+    '成約率': [0.5, 0.6, 0.55, 0.65, 0.6],
+    '売上': [300, 250, 350, 330, 210]
+}
+
 # Streamlitアプリの設定
-st.title('Sales Analysis')
-st.write('This app performs a regression analysis on sales data.')
+st.title('セールス分析')
+st.write('セールスデータの回帰分析')
 
 # データセットの選択
-dataset = st.selectbox('Select Dataset', ('Mercedes', 'BMW'))
+dataset = st.selectbox('データセット', ('Mercedes', 'BMW', 'NEXSTAGE'))
+
+# データフレームの選択
+dataframe = st.selectbox('データフレーム', ('ブランド', 'サービス', '車両', '価格'))
 
 # 選択されたデータセットに基づいてデータフレームを作成
 if dataset == 'Mercedes':
     df = pd.DataFrame(data_mercedes)
-else:
+elif dataset == 'BMW':
     df = pd.DataFrame(data_bmw)
+else:
+    df = pd.DataFrame(data_nextage)
 
 # 説明変数と目的変数に分ける
-X = df[['ローン・リースプラン', '保証サービス', '広告費']]
-y = df['売上']
-
+if dataframe == 'サービス':
+    X = df[['ローン・リースプラン', '保証サービス', '広告費']]
+    y = df['売上']
+elif dataframe == 'ブランド':
+    X = df[['ブランドイメージ', '顧客体験', 'リレーションシップ営業']]
+    y = df['売上']
+elif dataframe == '車両':
+    X = df[['車両品質', '店舗立地', '成約率']]
+    y = df['売上']
+else:
+    X = df[['価格', '広告費', '在庫数']]
+    y = df['売上']
+    
+    
 # 定数項を追加
 X = sm.add_constant(X)
 
