@@ -101,7 +101,7 @@ data = {
         },
         {
             'role': 'user',
-            'content': 'myContent'  # ここにユーザーの質問内容を入れます
+            'content': str(results_summary)
         }
     ]
 }
