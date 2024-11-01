@@ -152,6 +152,7 @@ if st.button('分析'):
             }
         ]
     }
+    
     response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
     groqResp = response.json()['choices'][0]['message']['content']
     st.subheader('Regression 結果')
