@@ -49,23 +49,19 @@ data_nextage = {
 }
 
 # フォントをWebからダウンロードして登録
-font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
+font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'
 font_name = 'MS-Gothic'
-
 response = requests.get(font_url)
 with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
     tf.write(response.content)
-    pdfmetrics.registerFont(TTFont(font_name, tf.name))
+pdfmetrics.registerFont(TTFont(font_name, tf.name))
 
 # Word生成関数
 def generate_word(content):
     doc = Document()
     doc.add_heading("Regression Result Analysis", level=1)
-    
-    # 結果の内容を1行ずつ追加
     for line in content.split("\n"):
         doc.add_paragraph(line)
-    
     buffer = BytesIO()
     doc.save(buffer)
     buffer.seek(0)
@@ -75,18 +71,13 @@ def generate_word(content):
 def generate_pdf(content):
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
-    
-    # 日本語フォント設定
     p.setFont(font_name, 8)
     p.drawString(100, 800, "Regression Result Analysis")
     text = p.beginText(100, 780)
     text.setFont(font_name, 10)
     text.setLeading(14)
-    
-    # 結果の内容を1行ずつ追加
     for line in content.split("\n"):
         text.textLine(line)
-    
     p.drawText(text)
     p.showPage()
     p.save()
@@ -106,7 +97,7 @@ if dataset in ['Mercedes', 'BMW']:
 else:
     dataframe = st.selectbox('データフレーム', ('車両', '価格'))
 
-# 選択されたデータセットに基づいてデータフレームを作成
+# データフレームの作成
 if dataset == 'Mercedes':
     df = pd.DataFrame(data_mercedes)
 elif dataset == 'BMW':
@@ -133,48 +124,47 @@ X = sm.add_constant(X)
 
 # 重回帰分析モデルの作成とフィッティング
 model = sm.OLS(y, X).fit()
-
-# 結果の出力
 results_summary = model.summary()
 
-# Groq APIをコールして分析
+# Groq API設定
 API_URL = 'https://api.groq.com/openai/v1/'
 MODEL = 'Llama-3.1-70b-Versatile'
 API_KEY = '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'
 maxTokens = 4096
-
 headers = {
     'Content-Type': 'application/json',
     'Authorization': f'Bearer {API_KEY}'
 }
 
-data = {
-    'model': MODEL,
-    'max_tokens': maxTokens,
-    'messages': [
-        {
-            'role': 'system',
-            'content': '貴方は専門家です。できるだけわかりやすく答えてください。必ず、日本語で答えてください。'
-        },
-        {
-            'role': 'user',
-            'content': '以下の文章を分析してください。'+str(results_summary)
-        }
-    ]
-}
+# 分析ボタンの作成
+if st.button('分析'):
+    data = {
+        'model': MODEL,
+        'max_tokens': maxTokens,
+        'messages': [
+            {
+                'role': 'system',
+                'content': '貴方は専門家です。できるだけわかりやすく答えてください。必ず、日本語で答えてください。'
+            },
+            {
+                'role': 'user',
+                'content': '以下の文章を分析してください。' + str(results_summary)
+            }
+        ]
+    }
+    response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
+    groqResp = response.json()['choices'][0]['message']['content']
+    st.subheader('Regression 結果')
+    st.text(results_summary)
+    st.subheader('結果分析')
+    st.text_area('Result Analysis', groqResp, height=300)
 
-response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
-groqResp = response.json()['choices'][0]['message']['content']
+    # 結果の内容をまとめる
+    contents = str(results_summary) + "\n\n" + groqResp
 
-# Streamlitで結果を表示
-st.subheader('Regression 結果')
-st.text(results_summary)
-
-st.subheader('結果分析')
-#st.text(groqResp)
-st.text_area('Result Analysis', groqResp, height=300)
-#st.text(response.json()['choices'][0]['message']['content'])
-contents = str(results_summary) + "\n\n" + groqResp
-#st.text_area('PDF', contents, height=300)
-word_buffer = generate_word(contents)
-st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    # PDFボタンの作成
+    if st.button("結果を印刷"):
+        word_buffer = generate_word(contents)
+        st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        # pdf_buffer = generate_pdf(contents)
+        # st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
