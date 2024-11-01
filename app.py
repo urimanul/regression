@@ -3,7 +3,7 @@ import pandas as pd
 import statsmodels.api as sm
 import requests
 from io import BytesIO
-from reportlab.lib.pagesizes import A3
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
@@ -59,7 +59,7 @@ with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
 # PDF生成関数
 def generate_pdf(content):
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=A3)
+    p = canvas.Canvas(buffer, pagesize=A4)
     
     # 日本語フォント設定
     p.setFont(font_name, 10)
