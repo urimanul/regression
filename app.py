@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import statsmodels.api as sm
+import requests
 
 # サンプルデータの作成
 data_mercedes = {
@@ -79,6 +80,23 @@ model = sm.OLS(y, X).fit()
 # 結果の出力
 results_summary = model.summary()
 
+# Groq APIをコールして分析
+api_url = "https://api.groq.com/analyze"
+api_key = "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"
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+data = {
+    "results_summary": str(results_summary)
+}
+
+response = requests.post(api_url, headers=headers, json=data)
+analysis_results = response.json()
+
 # Streamlitで結果を表示
 st.subheader('Regression Results')
 st.text(results_summary)
+
+st.subheader('Groq API Analysis Results')
+st.json(analysis_results)
