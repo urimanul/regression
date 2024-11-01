@@ -78,9 +78,9 @@ def generate_pdf(content):
     text.setFont(font_name, 10)
     text.setLeading(14)
     for line in content.split("\n"):
-    wrapped_lines = wrap(line, 50)
-    for wrapped_line in wrapped_lines:
-        text.textLine(wrapped_line)
+        wrapped_lines = wrap(line, 50)
+        for wrapped_line in wrapped_lines:
+            text.textLine(wrapped_line)
     #for line in content.split("\n"):
         #text.textLine(line)
     p.drawText(text)
