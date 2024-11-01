@@ -115,5 +115,5 @@ st.text(results_summary)
 
 st.subheader('結果分析')
 #st.text(groqResp)
-st.text_area('結果分析', groqResp, height=300)
+st.text_area('Result Analysis', groqResp, height=300)
 #st.text(response.json()['choices'][0]['message']['content'])
