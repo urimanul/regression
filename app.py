@@ -137,49 +137,13 @@ model = sm.OLS(y, X).fit()
 # 結果の出力
 results_summary = model.summary()
 
-# Groq APIをコールして分析
-API_URL = 'https://api.groq.com/openai/v1/'
-MODEL = 'Llama-3.1-70b-Versatile'
-API_KEY = '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'
-maxTokens = 4096
-
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer {API_KEY}'
-}
-
-data = {
-    'model': MODEL,
-    'max_tokens': maxTokens,
-    'messages': [
-        {
-            'role': 'system',
-            'content': '貴方は専門家です。できるだけわかりやすく答えてください。必ず、日本語で答えてください。'
-        },
-        {
-            'role': 'user',
-            'content': '以下の文章を分析してください。'+str(results_summary)
-        }
-    ]
-}
-
-response = requests.post(f'{API_URL}chat/completions', headers=headers, json=data)
-#groqResp = response.json()['choices'][0]['message']['content']
-
 # Streamlitで結果を表示
 st.subheader('Regression 結果')
 st.text(results_summary)
 
-st.subheader('結果分析')
-st.text_area('Result Analysis', str(response), height=300)
-#st.text_area('Result Analysis', groqResp, height=300)
-#st.text(response.json()['choices'][0]['message']['content'])
-#contents = str(results_summary) + "\n\n" + groqResp
-#st.text_area('PDF', contents, height=300)
-
 # PDFボタンの作成
 if st.button("結果を印刷"):
-    word_buffer = generate_word(contents)
+    word_buffer = generate_word(results_summary)
     st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     #pdf_buffer = generate_pdf(contents)
     #st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
