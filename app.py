@@ -3,7 +3,10 @@ import pandas as pd
 import statsmodels.api as sm
 import requests
 from io import BytesIO
-from docx import Document
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 import tempfile
 
 # サンプルデータの作成
@@ -44,17 +47,34 @@ data_nextage = {
     '売上': [300, 250, 350, 330, 210] * 20
 }
 
-# Word生成関数
-def generate_word(content):
-    doc = Document()
-    doc.add_heading("Regression Result Analysis", level=1)
+# フォントをWebからダウンロードして登録
+font_url = 'https://www.ryhintl.com/font-nasu/Nasu-Regular.ttf'  # 使用したいフォントファイルのURL
+font_name = 'MS-Gothic'
+
+response = requests.get(font_url)
+with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
+    tf.write(response.content)
+    pdfmetrics.registerFont(TTFont(font_name, tf.name))
+
+# PDF生成関数
+def generate_pdf(content):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # 日本語フォント設定
+    p.setFont(font_name, 8)
+    p.drawString(100, 800, "Regression Result Analysis")
+    text = p.beginText(100, 780)
+    text.setFont(font_name, 10)
+    text.setLeading(14)
     
     # 結果の内容を1行ずつ追加
     for line in content.split("\n"):
-        doc.add_paragraph(line)
+        text.textLine(line)
     
-    buffer = BytesIO()
-    doc.save(buffer)
+    p.drawText(text)
+    p.showPage()
+    p.save()
     buffer.seek(0)
     return buffer
 
@@ -136,11 +156,13 @@ st.subheader('Regression 結果')
 st.text(results_summary)
 
 st.subheader('結果分析')
+#st.text(groqResp)
 st.text_area('Result Analysis', groqResp, height=300)
+#st.text(response.json()['choices'][0]['message']['content'])
 contents = str(results_summary) + "\n\n" + groqResp
-st.text_area('Word', contents, height=300)
+st.text_area('PDF', contents, height=300)
 
-# Wordボタンの作成
+# PDFボタンの作成
 if st.button("結果を印刷"):
-    word_buffer = generate_word(contents)
-    st.download_button("Download Word", word_buffer, "分析結果.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    pdf_buffer = generate_pdf(contents)
+    st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
