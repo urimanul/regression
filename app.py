@@ -72,7 +72,6 @@ def generate_word(content):
 def generate_pdf(content):
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
-    font_name = "Helvetica"  # フォント名の指定が必要です
     p.setFont(font_name, 8)
     p.drawString(100, 800, "Regression Result Analysis")
 
