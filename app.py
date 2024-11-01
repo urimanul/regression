@@ -162,5 +162,5 @@ st.text_area('Result Analysis', groqResp, height=300)
 
 # PDFボタンの作成
 if st.button("結果を印刷"):
-    pdf_buffer = generate_pdf(str(results_summary) + "\n\n" + groqResp)
+    pdf_buffer = generate_pdf(str(results_summary) + "\n\n" + response.json()['choices'][0]['message']['content'])
     st.download_button("Download PDF", pdf_buffer, "分析結果.pdf", "application/pdf")
