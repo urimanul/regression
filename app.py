@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import statsmodels.api as sm
 import requests
+from io import BytesIO
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 # サンプルデータの作成
 data_mercedes = {
