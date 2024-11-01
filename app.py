@@ -37,7 +37,7 @@ data_nextage = {
 
 # Streamlitアプリの設定
 st.title('セールス分析')
-st.write('セールスデータの回帰分析')
+st.write('セールスデータの回帰分析（因果探索）')
 
 # データセットの選択
 dataset = st.selectbox('データセット', ('Mercedes', 'BMW', 'NEXSTAGE'))
