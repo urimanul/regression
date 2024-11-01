@@ -3,7 +3,7 @@ import pandas as pd
 import statsmodels.api as sm
 import requests
 from io import BytesIO
-from reportlab.lib.pagesizes import landscape, A4
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
@@ -59,7 +59,7 @@ with tempfile.NamedTemporaryFile(delete=False, suffix=".ttf") as tf:
 # PDF生成関数
 def generate_pdf(content):
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=landscape(A4))
+    p = canvas.Canvas(buffer, pagesize=A4)
     
     # 日本語フォント設定
     p.setFont(font_name, 10)
@@ -71,7 +71,7 @@ def generate_pdf(content):
     # テキストをページ幅に合わせて折り返し
     max_width = 800  # ページ横幅に収まるように調整
     for line in content.split("\n"):
-        wrapped_lines = textwrap.wrap(line, width=90)  # 90文字ごとに改行
+        wrapped_lines = textwrap.wrap(line, width=50)  # 50文字ごとに改行
         for wrapped_line in wrapped_lines:
             text.textLine(wrapped_line)
         text.textLine("")  # 行間を開ける
