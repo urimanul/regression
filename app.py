@@ -8,6 +8,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from docx import Document
+from textwrap3 import wrap
 import tempfile
 
 # サンプルデータの作成
@@ -77,7 +78,11 @@ def generate_pdf(content):
     text.setFont(font_name, 10)
     text.setLeading(14)
     for line in content.split("\n"):
-        text.textLine(line)
+    wrapped_lines = wrap(line, 50)
+    for wrapped_line in wrapped_lines:
+        text.textLine(wrapped_line)
+    #for line in content.split("\n"):
+        #text.textLine(line)
     p.drawText(text)
     p.showPage()
     p.save()
